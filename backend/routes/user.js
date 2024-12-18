@@ -63,4 +63,20 @@ router.post('/profileupdate',(req,res)=>{
      
 })
 
+
+router.get('/getuserprofile',(req,res)=>{
+  
+    const userFetch = jwt.verify(req.headers.authorization.toString(),process.env.JWT_TOKEN_SECRET);
+   console.log(userFetch)
+   User.find({userEmail: userFetch.userEmail}).then(resp =>{
+
+    res.json({data: resp})
+
+   }).catch(err => {
+    console.log(err)
+    res.json({msg: 'error fetching user'})
+   })
+  
+})
+
 module.exports = router;

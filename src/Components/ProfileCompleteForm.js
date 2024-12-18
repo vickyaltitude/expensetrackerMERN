@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Form, Button, Card, Alert } from "react-bootstrap";
 import apiHandler from "../apihandler";
+import { useNavigate } from "react-router-dom";
 
 const ProfileCompleteForm = () => {
+
+    const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     fullName: "",
     profilePicUrl: "",
@@ -34,6 +38,7 @@ const ProfileCompleteForm = () => {
             setSuccess("Profile updated successfully!");
             setError("");
             console.log(resp)
+            navigate('/userprofile')
         }).catch(err => {
             
             console.log(err)

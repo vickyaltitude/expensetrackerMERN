@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
 import { Container, Row, Col, Form, Button, Card, Alert } from "react-bootstrap";
 import apiHandler from "../apihandler";
 
@@ -127,6 +128,9 @@ const Signup = () => {
                 <Button variant="success" type="submit" className="w-100">
                   Sign Up
                 </Button>
+                <br />
+                <br />
+                <NavLink className="d-flex justify-content-center align-items-center" to='/login'>Already have an account? Please login</NavLink>
               </Form>
             </Card.Body>
           </Card>

@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { DataContext } from "../store/ContextProvider";
 import { Container, Row, Col, Form, Button, Card, Alert } from "react-bootstrap";
 import apiHandler from "../apihandler"; 
 import { NavLink,useNavigate } from "react-router-dom";
 
 const Login = () => {
-
+    
+    const dataCtx = useContext(DataContext)
     const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -46,6 +48,7 @@ const Login = () => {
             localStorage.setItem('userAUTHID',response.userCred)
             setError("");
             setSuccess("Login successful!");
+            dataCtx.setIsLoggedIn(true)
             navigate('/home')
             setFormData({ email: "", password: "" });
           }
@@ -100,9 +103,13 @@ const Login = () => {
                 <Button variant="success" type="submit" className="w-100">
                   Login
                 </Button>
+                <br /> <br />
+                <Button onClick={()=> navigate('/forgotpassword')} variant="danger" type="button" className="w-100">
+                    Forgot Password
+                </Button>
                 <br />
                 <br />
-                <NavLink className="d-flex justify-content-center align-items-center" to='/'>New user? Please signup</NavLink>
+                <NavLink className="d-flex justify-content-center align-items-center" to='/signup'>New user? Please signup</NavLink>
               </Form>
             </Card.Body>
           </Card>

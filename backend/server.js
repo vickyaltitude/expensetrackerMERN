@@ -12,12 +12,13 @@ app.use(cors({
 }));
 
 const user = require('./routes/user');
+const forgotPass = require('./routes/passwordreset');
 
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.json());
 
 app.use('/user',user);
-
+app.use(forgotPass);
 
 
 connectDB().then(resp =>{

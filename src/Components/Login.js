@@ -43,6 +43,7 @@ const Login = () => {
             setError("User not found");
             setSuccess("");
           }else if(response.msg === 'Login successfull'){
+            localStorage.setItem('userAUTHID',response.userCred)
             setError("");
             setSuccess("Login successful!");
             navigate('/home')

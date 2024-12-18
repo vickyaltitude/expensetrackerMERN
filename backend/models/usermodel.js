@@ -13,6 +13,12 @@ const Users = new Schema({
     userPassword:{
         type: String,
         required: true
+    },
+    userFullName:{
+        type: String
+    },
+    userProfilePicUrl:{
+        type: String
     }
 })
 

@@ -2,22 +2,50 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/usermodel');
 const userAuth = require('../util/jwt');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
+
+const Sib = require('sib-api-v3-sdk');
+const client = Sib.ApiClient.instance;
+const apikey = client.authentications['api-key'];
+apikey.apiKey = process.env.BREVO_API_KEY; 
+let transEmailApi = new Sib.TransactionalEmailsApi();
 
 
 router.post('/usersignup',(req,res)=>{
 
     console.log(req.body)
+
+    const uniqueID = uuidv4();
     const newUser = new User({
         userName: req.body.userName,
         userEmail: req.body.userEmail,
-        userPassword: req.body.userPassword
+        userPassword: req.body.userPassword,
+        userVerifyToken: uniqueID
     })
 
     newUser.save().then(resp =>{
 
          console.log('user inserted successfully')
          res.json({msg:'User inserted successfully'})
+
+         const receiverEmail = req.body.userEmail
+        const sender = {
+            email: 'vignvick3005@gmail.com',
+            name: 'Expense Tracker'
+        }
+        const receiver = [
+            {
+                email : receiverEmail
+            }
+        ]
+
+        transEmailApi.sendTransacEmail({
+            sender,
+            to: receiver,
+            subject: "Email verification",
+             htmlContent: `<h2>Please verify your mail</h2><p>Please reset your password through this link: <a href="http://localhost:5000/user/userverification?uuid=${uniqueID}">Reset Password</a></p>`
+        }).then(resp => console.log(resp)).catch(err => console.log(err))
 
     }).catch(err =>{
 
@@ -77,6 +105,31 @@ router.get('/getuserprofile',(req,res)=>{
     res.json({msg: 'error fetching user'})
    })
   
+})
+
+router.get('/userverification',(req,res)=>{
+     const {uuid} = req.query;
+     console.log(uuid)
+     User.find({userVerifyToken: uuid.toString()}).then(resp =>{
+        
+        if(resp.length > 0){
+
+            User.findOneAndUpdate({userVerifyToken: uuid.toString()},{$set:{userVerified: true,userVerifyToken:null},},{new:true}).then(resp =>{
+
+                console.log(resp)
+                res.send("<h2>Thanks for the verification</h2>")
+            }).catch(err =>{
+                console.log(err)
+                res.send("<h2>Internal server error</h2>")
+            })
+           
+
+        }
+        
+     }).catch(err =>{
+        console.log(err,'error while finding user token')
+     })
+     
 })
 
 module.exports = router;

@@ -19,6 +19,14 @@ const Users = new Schema({
     },
     userProfilePicUrl:{
         type: String
+    },
+    userVerified:{
+        type: Boolean,
+        default: false
+    },
+    userVerifyToken:{
+        type: String,
+        required: true
     }
 })
 

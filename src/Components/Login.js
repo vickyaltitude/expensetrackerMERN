@@ -1,12 +1,15 @@
-import React, { useContext, useState } from "react";
-import { DataContext } from "../store/ContextProvider";
+import React, { useState } from "react";
 import { Container, Row, Col, Form, Button, Card, Alert } from "react-bootstrap";
 import apiHandler from "../apihandler"; 
 import { NavLink,useNavigate } from "react-router-dom";
 
+import { useDispatch } from "react-redux";
+import {userAuthSliceAction} from '../store/UserAuth';
+
 const Login = () => {
     
-    const dataCtx = useContext(DataContext)
+
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
     email: "",
@@ -56,11 +59,11 @@ const Login = () => {
           }else if(response.msg === 'Login successfull'){
 
             localStorage.setItem('userAUTHID',response.userCred)
-            dataCtx.setCurrentuser(response.userCred)
+            dispatch(userAuthSliceAction.setCurrentUser(response.userCred))
             setError("");
             setSuccess("Login successful!");
-            dataCtx.setIsLoggedIn(true)
-            navigate('/')
+            dispatch(userAuthSliceAction.setIsLoggedIn(true))
+            navigate('/home')
             setFormData({ email: "", password: "" });
 
           }

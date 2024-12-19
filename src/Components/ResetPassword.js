@@ -3,7 +3,7 @@ import { Container, Row, Col, Form, Button, Card, Alert } from 'react-bootstrap'
 import apiHandler from '../apihandler'; 
 import { useLocation } from 'react-router-dom';
 
-const ResetPassword = ({ match }) => {
+const ResetPassword = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');

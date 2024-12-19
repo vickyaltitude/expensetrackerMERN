@@ -1,18 +1,27 @@
-import { DataContext } from "../store/ContextProvider";
-import React, { useState, useContext } from "react";
+
+import React, {useRef, useState,useEffect} from "react";
 import { Container, Form, Button, Table } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
+import {expenseSliceAction} from '../store/Expenses'
+import { useDispatch,useSelector } from "react-redux";
+import apiHandler from "../apihandler";
 
 const HomePage = () => {
+
+  const expenses = useSelector(state => state.expenses.expenses);
+  const currentUser = useSelector(state => state.userAuth.currentUser);
   const [amount, setMoneySpent] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [editIndex, setEditIndex] = useState(null);  
   const [editAmount, setEditAmount] = useState("");
   const [editDescription, setEditDescription] = useState("");
-  const [editCategory, setEditCategory] = useState("");
+  const [isUserVerified,setIsUserVerified] = useState(false)
+  const isInitialMount = useRef(true);
 
-  const expenseCtx = useContext(DataContext);
+  const [editCategory, setEditCategory] = useState("");
+  const dispatch = useDispatch();
+
 
   const categories = [
     "Food",
@@ -24,18 +33,22 @@ const HomePage = () => {
   ];
 
 
+
+
   const addExpense = (e) => {
+
     e.preventDefault();
     if (amount && description && category) {
-      expenseCtx.setExpenses([
-        ...expenseCtx.expenses,
+
+      dispatch(expenseSliceAction.addExpense([
+        ...expenses,
         {
           amount,
           description,
           category,
-          id: expenseCtx.expenses.length === 0 ? 1 : expenseCtx.expenses.length + 1,
+          id: expenses.length === 0 ? 1 : expenses.length + 1,
         },
-      ]);
+      ]))
       setMoneySpent("");
       setDescription("");
       setCategory("");
@@ -43,7 +56,7 @@ const HomePage = () => {
   };
 
   const deleteExpense = (id) => {
-    expenseCtx.setExpenses(expenseCtx.expenses.filter((expense) => expense.id !== id));
+    dispatch(expenseSliceAction.addExpense(expenses.filter((expense) => expense.id !== id)))
   };
 
   const startEditing = (expense, index) => {
@@ -54,24 +67,83 @@ const HomePage = () => {
   };
 
   const saveEdit = () => {
-    const updatedExpenses = expenseCtx.expenses.map((expense, index) =>
+    const updatedExpenses = expenses.map((expense, index) =>
       index === editIndex
         ? { ...expense, amount: editAmount, description: editDescription, category: editCategory }
         : expense
     );
-    expenseCtx.setExpenses(updatedExpenses);
+    dispatch(expenseSliceAction.addExpense(updatedExpenses))
     setEditIndex(null);  
     setEditAmount("");
     setEditDescription("");
     setEditCategory("");
   };
 
+  useEffect(()=>{
+
+    if(isInitialMount.current){
+       isInitialMount.current = false;
+       return
+    }
+
+    apiHandler('http://localhost:5000/postexpense',{
+       method: 'POST',
+       headers:{
+          'Content-Type' : 'application/json',
+       },
+       body: JSON.stringify({userId: localStorage.getItem('userAUTHID'),expenses: expenses})
+    }).then(resp =>{
+       console.log(resp)
+    }).catch(err => console.log(err))
+
+ },[dispatch,expenses])
+
+ 
+ useEffect(()=>{
+
+  apiHandler('http://localhost:5000/getexpense',{
+     method: 'GET',
+     headers:{
+        'Content-Type' : 'application/json',
+        'Authorization' : localStorage.getItem('userAUTHID')
+     }
+}).then(resp =>{
+  
+  console.log(resp)
+  dispatch(expenseSliceAction.addExpense(resp.data[0].expenses))
+
+}).catch(err => console.log(err))
+
+},[dispatch,currentUser])
+
+
+useEffect(()=>{
+
+  apiHandler('http://localhost:5000/user/getuserprofile',{
+    method: 'GET',
+    headers:{
+        'Content-Type':'application/json',
+        'Authorization' : localStorage.getItem('userAUTHID')
+    }
+}).then(resp =>{
+
+  setIsUserVerified(resp.data[0].userVerified)
+
+}).catch(err => console.log(err))
+
+},[])
+
+
+
   return (
     <>
-      <h4>
-        Your profile is incomplete! Please update your profile to continue{" "}
-        <NavLink to="/profileupdate">Click here to update</NavLink>
-      </h4>
+
+{!isUserVerified && <h4>
+       
+       Your profile is incomplete! Please update your profile to continue{" "}
+       <NavLink to="/profileupdate">Click here to update</NavLink>
+     </h4>}
+      
       <Container className="mt-5">
         <h2>Expense Tracker</h2>
 
@@ -129,7 +201,7 @@ const HomePage = () => {
             </tr>
           </thead>
           <tbody>
-            {expenseCtx.expenses.map((expense, index) => (
+            {expenses.map((expense, index) => (
               <tr key={expense.id}>
                 <td>{index + 1}</td>
                 <td>

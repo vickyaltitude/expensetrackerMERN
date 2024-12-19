@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import ContextProvider from './store/ContextProvider';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './store/main';
 
 
 
@@ -13,9 +14,10 @@ root.render(
 
     <BrowserRouter>
     
-    <ContextProvider>
+    <Provider store={store}>
     <App />
-    </ContextProvider>
+    </Provider>
+  
 
     </BrowserRouter>
  

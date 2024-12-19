@@ -83,7 +83,7 @@ router.post('/profileupdate',(req,res)=>{
     
      const userFetch = jwt.verify(req.body.userId,process.env.JWT_TOKEN_SECRET);
    
-     User.findOneAndUpdate({userEmail:userFetch.userEmail},{$set:{userFullName:req.body.userFullName,userProfilePicUrl: req.body.userProfileUrl}}).then(resp =>{
+     User.findOneAndUpdate({userEmail:userFetch.userEmail},{$set:{userFullName:req.body.userFullName,userProfilePicUrl: req.body.userProfileUrl,userVerified: true}}).then(resp =>{
 
         res.json({msg:'user updated successfully'})
 

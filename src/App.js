@@ -27,7 +27,7 @@ function App() {
      
       <Navbar bg="dark" variant="dark" expand="lg">
         <Container>
-          <Navbar.Brand href="/">MyApp</Navbar.Brand>
+          <Navbar.Brand as={NavLink} href="/">MyApp</Navbar.Brand>
           <Navbar.Toggle aria-controls="navbar-nav" />
           <Navbar.Collapse id="navbar-nav">
             <Nav className="me-auto">

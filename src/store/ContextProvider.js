@@ -1,19 +1,23 @@
-import React,{useState,useEffect} from 'react'
-import { useNavigate } from 'react-router-dom';
-
+import React,{useState,useEffect,useRef} from 'react';
+import apiHandler from '../apihandler';
 
 export const DataContext = React.createContext({
+     expenses: [],
+     setExpenses: ()=> {},
      isLoggedIn: false,
      setIsLoggedIn: ()=>{}
 })
 
 const ContextProvider = ({children}) =>{
 
-    const navigate = useNavigate()
+    const isInitialMount = useRef(true);
+    const [expenses,setExpenses] = useState([])
 
    const [isLoggedIn,setIsLoggedIn] = useState(false);
 
    let sendData = {
+      expenses: expenses,
+      setExpenses: setExpenses,
     isLoggedIn : isLoggedIn,
     setIsLoggedIn: setIsLoggedIn
    }
@@ -27,6 +31,29 @@ const ContextProvider = ({children}) =>{
      }
 
    },[])
+
+   useEffect(()=>{
+
+      if(isInitialMount.current){
+         isInitialMount.current = false;
+         return
+      }
+
+      apiHandler('http://localhost:5000/postexpense',{
+         method: 'POST',
+         headers:{
+            'Content-Type' : 'application/json',
+         },
+         body: JSON.stringify({userId: localStorage.getItem('userAUTHID'),expenses: expenses})
+      }).then(resp =>{
+         console.log(resp)
+      }).catch(err => console.log(err))
+
+   },[expenses])
+
+   useEffect(()=>{
+       
+   })
 
    return(
       <DataContext.Provider value={sendData}>

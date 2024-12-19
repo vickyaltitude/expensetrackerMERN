@@ -1,24 +1,25 @@
-
-import React, { useState } from "react";
+import { DataContext } from "../store/ContextProvider";
+import React, { useState,useContext } from "react";
 import { Container, Form, Button, Table } from "react-bootstrap";
 import { NavLink } from 'react-router-dom';
 
 const HomePage = () => {
 
-  const [moneySpent, setMoneySpent] = useState("");
+  const [amount, setMoneySpent] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
-  const [expenses, setExpenses] = useState([]);
 
-  const categories = ["Food", "Transportation", "Entertainment", "Health", "Others"];
+  const expenseCtx = useContext(DataContext)
+
+  const categories = ["Food", "Transportation", "Entertainment", "Health", "Vacation","Others"];
 
 
   const addExpense = (e) => {
     e.preventDefault();
-    if (moneySpent && description && category) {
-      setExpenses([
-        ...expenses,
-        { moneySpent, description, category, id: Date.now() },
+    if (amount && description && category) {
+      expenseCtx.setExpenses([
+        ...expenseCtx.expenses,
+        { amount, description, category, id: expenseCtx.expenses.length === 0 ? 1 : expenseCtx.expenses.length + 1 },
       ]);
       setMoneySpent("");
       setDescription("");
@@ -41,7 +42,7 @@ const HomePage = () => {
           <Form.Label>Money Spent</Form.Label>
           <Form.Control
             type="number"
-            value={moneySpent}
+            value={amount}
             onChange={(e) => setMoneySpent(e.target.value)}
             placeholder="Enter amount"
           />
@@ -90,10 +91,10 @@ const HomePage = () => {
           </tr>
         </thead>
         <tbody>
-          {expenses.map((expense, index) => (
+          {expenseCtx.expenses.map((expense, index) => (
             <tr key={expense.id}>
               <td>{index + 1}</td>
-              <td>${expense.moneySpent}</td>
+              <td>${expense.amount}</td>
               <td>{expense.description}</td>
               <td>{expense.category}</td>
             </tr>

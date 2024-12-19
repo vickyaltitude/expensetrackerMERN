@@ -49,7 +49,7 @@ const Login = () => {
             setError("");
             setSuccess("Login successful!");
             dataCtx.setIsLoggedIn(true)
-            navigate('/home')
+            navigate('/')
             setFormData({ email: "", password: "" });
           }
        

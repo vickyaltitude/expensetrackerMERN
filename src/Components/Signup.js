@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink,useNavigate } from "react-router-dom";
 import { Container, Row, Col, Form, Button, Card, Alert } from "react-bootstrap";
 import apiHandler from "../apihandler";
 
 const Signup = () => {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -47,6 +48,7 @@ const Signup = () => {
                 email: "",
                 password: "",
                 confirmPassword: "",})
+                navigate('/login')
 
         }).catch(error => {
             

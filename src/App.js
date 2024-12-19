@@ -9,6 +9,7 @@ import UserProfile from "./Components/UserProfile";
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import ForgotPassword from "./Components/ForgotPassword";
 import ResetPassword from "./Components/ResetPassword";
+import AboutPage from "./Components/AboutPage";
 
 function App() {
 
@@ -59,6 +60,7 @@ function App() {
         <Route path="/userprofile" element={<UserProfile />} />
         <Route path='/forgotpassword' element={<ForgotPassword />} />
         <Route path='/resetpassword' element={<ResetPassword />} />
+        <Route path='/about' element={<AboutPage />} />
       </Routes>
     </>
   );

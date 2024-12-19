@@ -1,10 +1,36 @@
-import React from 'react';
+import React ,{useEffect} from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './SetTheme.css';
+import SetThemes from './SetThemes';
+import { useDispatch, useSelector } from 'react-redux';
+import {themeReducerAction} from '../store/Theme'
 
 
 const AboutPage = () => {
+
+  const isDark = useSelector(state => state.theme.darkTheme)
+  const expenses = useSelector(state=> state.expenses.expenses)
+  const dispatch = useDispatch();
+     
+    useEffect(()=>{
+      
+      const totalSpent = expenses.reduce((cumulative,curr)=> cumulative = cumulative + curr.amount,0);
+      
+    if(totalSpent > 999){
+      dispatch(themeReducerAction.setDark(true))
+     
+      localStorage.setItem('theme','dark')
+    }else if (totalSpent < 1000){
+      dispatch(themeReducerAction.setDark(false))
+
+      localStorage.setItem('theme','light')
+    }
+  
+    },[expenses])
+
   return (
+    <SetThemes>
     <Container className="mt-5 text-center">
   
       <Row>
@@ -14,9 +40,9 @@ const AboutPage = () => {
       </Row>
       <Row>
         <Col>
-          <Card className="shadow-lg p-4">
-            <Card.Body>
-              <Card.Title className="mb-4">About Expense Tracker</Card.Title>
+          <Card  bg={isDark ? "dark" : "light" } className="shadow-lg p-4">
+            <Card.Body style={{color: isDark ? 'white' : 'black'}} >
+              <Card.Title  className="mb-4">About Expense Tracker</Card.Title>
               <Card.Text>
                 Welcome to our Expense Tracker application! We understand that managing personal finances can be
                 overwhelming at times, but with our simple, intuitive tool, you can easily track your expenses, set
@@ -44,6 +70,7 @@ const AboutPage = () => {
         </Col>
       </Row>
     </Container>
+    </SetThemes>
   );
 };
 

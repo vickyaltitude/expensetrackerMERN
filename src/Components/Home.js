@@ -5,11 +5,13 @@ import { NavLink } from "react-router-dom";
 import {expenseSliceAction} from '../store/Expenses'
 import { useDispatch,useSelector } from "react-redux";
 import apiHandler from "../apihandler";
+import SetThemes from "./SetThemes";
 
 const HomePage = () => {
 
   const expenses = useSelector(state => state.expenses.expenses);
   const currentUser = useSelector(state => state.userAuth.currentUser);
+  const isDark = useSelector(state => state.theme.darkTheme)
   const [amount, setMoneySpent] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
@@ -49,6 +51,8 @@ const HomePage = () => {
           id: expenses.length === 0 ? 1 : expenses.length + 1,
         },
       ]))
+ 
+
       setMoneySpent("");
       setDescription("");
       setCategory("");
@@ -96,7 +100,7 @@ const HomePage = () => {
        console.log(resp)
     }).catch(err => console.log(err))
 
- },[dispatch,expenses])
+ },[expenses])
 
  
  useEffect(()=>{
@@ -111,10 +115,11 @@ const HomePage = () => {
   
   console.log(resp)
   dispatch(expenseSliceAction.addExpense(resp.data[0].expenses))
+ 
 
 }).catch(err => console.log(err))
 
-},[dispatch,currentUser])
+},[currentUser])
 
 
 useEffect(()=>{
@@ -130,21 +135,23 @@ useEffect(()=>{
   setIsUserVerified(resp.data[0].userVerified)
 
 }).catch(err => console.log(err))
+console.log(expenses)
+
 
 },[])
 
 
 
   return (
-    <>
+    <SetThemes>
 
-{!isUserVerified && <h4>
+{!isUserVerified && <h4 >
        
        Your profile is incomplete! Please update your profile to continue{" "}
        <NavLink to="/profileupdate">Click here to update</NavLink>
      </h4>}
       
-      <Container className="mt-5">
+      <Container className="mt-5" >
         <h2>Expense Tracker</h2>
 
         <Form onSubmit={addExpense}>
@@ -190,7 +197,7 @@ useEffect(()=>{
         </Form>
 
         <h3 className="mt-4">All Expenses</h3>
-        <Table striped bordered hover className="mt-3">
+        <Table striped bordered hover variant={isDark ? "dark" : "light"} className="mt-3">
           <thead>
             <tr>
               <th>#</th>
@@ -268,7 +275,7 @@ useEffect(()=>{
           </tbody>
         </Table>
       </Container>
-    </>
+    </SetThemes>
   );
 };
 

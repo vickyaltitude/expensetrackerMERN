@@ -2,6 +2,8 @@ import React,{useState,useEffect,useRef} from 'react';
 import apiHandler from '../apihandler';
 
 export const DataContext = React.createContext({
+   currentUser: '',
+   setCurrentuser: ()=>{},
      expenses: [],
      setExpenses: ()=> {},
      isLoggedIn: false,
@@ -12,10 +14,13 @@ const ContextProvider = ({children}) =>{
 
     const isInitialMount = useRef(true);
     const [expenses,setExpenses] = useState([])
+    const [currentUser,setCurrentuser] = useState('')
 
    const [isLoggedIn,setIsLoggedIn] = useState(false);
 
    let sendData = {
+      currentUser: currentUser,
+      setCurrentuser: setCurrentuser,
       expenses: expenses,
       setExpenses: setExpenses,
     isLoggedIn : isLoggedIn,
@@ -52,8 +57,21 @@ const ContextProvider = ({children}) =>{
    },[expenses])
 
    useEffect(()=>{
-       
-   })
+
+      apiHandler('http://localhost:5000/getexpense',{
+         method: 'GET',
+         headers:{
+            'Content-Type' : 'application/json',
+            'Authorization' : localStorage.getItem('userAUTHID')
+         }
+   }).then(resp =>{
+      
+      console.log(resp)
+      setExpenses(resp.data[0].expenses)
+
+   }).catch(err => console.log(err))
+
+},[currentUser])
 
    return(
       <DataContext.Provider value={sendData}>

@@ -19,4 +19,16 @@ router.post('/postexpense', (req,res)=>{
    
 })
 
+router.get('/getexpense',(req,res)=>{
+    const userId = req.headers.authorization
+    const parsedUser = jwt.verify(userId,process.env.JWT_TOKEN_SECRET)
+    Expenses.find({user_id: parsedUser.userId}).then(resp =>{
+        res.json({data: resp})
+    }).catch(err =>{
+        console.log(err)
+        res.json({msg:'error fetching expenses'})
+    })
+  
+})
+
 module.exports = router

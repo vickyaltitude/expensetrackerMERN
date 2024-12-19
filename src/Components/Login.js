@@ -8,7 +8,7 @@ const Login = () => {
     
     const dataCtx = useContext(DataContext)
     const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
@@ -24,33 +24,45 @@ const Login = () => {
     e.preventDefault();
 
     if (formData.password.length < 6) {
+
       setError("Password must be at least 6 characters long");
       setSuccess("");
+
     } else {
+
       let optionObj = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ userEmail: formData.email, userPassword: formData.password }),
+
       };
 
       apiHandler("http://localhost:5000/user/userlogin", optionObj)
         .then((response) => {
+
           console.log(response);
           if(response.msg === 'Password incorrect'){
+
             setError("Password incorrect");
           setSuccess("");
+
           }else if (response.msg === 'User not found'){
+
             setError("User not found");
             setSuccess("");
+
           }else if(response.msg === 'Login successfull'){
+
             localStorage.setItem('userAUTHID',response.userCred)
+            dataCtx.setCurrentuser(response.userCred)
             setError("");
             setSuccess("Login successful!");
             dataCtx.setIsLoggedIn(true)
             navigate('/')
             setFormData({ email: "", password: "" });
+
           }
        
         })
